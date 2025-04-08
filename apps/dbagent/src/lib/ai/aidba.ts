@@ -1,8 +1,9 @@
 import { anthropic } from '@ai-sdk/anthropic';
-import { deepseek } from '@ai-sdk/deepseek';
+import { createDeepSeek, deepseek } from '@ai-sdk/deepseek';
 import { openai } from '@ai-sdk/openai';
 import { LanguageModelV1, Tool } from 'ai';
 import { Connection } from '~/lib/db/connections';
+import { env } from '~/lib/env/server';
 import { commonToolset, getDBClusterTools, getDBSQLTools, mergeToolsets, playbookToolset } from './tools';
 
 export const commonSystemPrompt = `
@@ -40,7 +41,13 @@ export function getModelInstance(model: string): LanguageModelV1 {
   if (model.startsWith('openai-')) {
     return openai(model.replace('openai-', ''));
   } else if (model.startsWith('deepseek-')) {
-    return deepseek(model);
+    if (model === 'deepseek-local') {
+      return env.DEEPSEEK_LOCAL_URL
+        ? createDeepSeek({ baseURL: env.DEEPSEEK_LOCAL_URL })(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat')
+        : deepseek(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat');
+    } else {
+      return deepseek(model);
+    }
   } else if (model.startsWith('anthropic-')) {
     return anthropic(model.replace('anthropic-', ''));
   } else {

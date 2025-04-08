@@ -7,6 +7,10 @@ const schema = z.object({
   // The URL of the database that we use to store data
   DATABASE_URL: z.string(),
 
+  // NextAuth configuration
+  NEXTAUTH_URL: z.string().optional(),
+  NEXTAUTH_TRUST_HOST: z.string().optional().default('false'),
+
   // The OpenID client settings
   AUTH_SECRET: z.string().optional(),
   AUTH_OPENID_ID: z.string().optional(),
@@ -16,6 +20,8 @@ const schema = z.object({
   // LLM API credentials
   OPENAI_API_KEY: z.string(),
   DEEPSEEK_API_KEY: z.string().optional(),
+  DEEPSEEK_LOCAL_URL: z.string().optional(),
+  DEEPSEEK_LOCAL_MODEL: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
 
   // Scheduler

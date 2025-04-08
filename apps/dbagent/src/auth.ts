@@ -38,6 +38,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt'
   },
+  trustHost: env.NEXTAUTH_TRUST_HOST === 'true',
   callbacks: {
     async jwt({ token, account, user }) {
       // Initial sign-in

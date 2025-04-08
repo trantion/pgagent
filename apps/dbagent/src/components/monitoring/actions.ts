@@ -1,6 +1,6 @@
 'use server';
 
-import { openai } from '@ai-sdk/openai';
+import { createDeepSeek, deepseek } from '@ai-sdk/deepseek';
 import { generateText } from 'ai';
 import { auth } from '~/auth';
 import { getScheduleRuns, ScheduleRun } from '~/lib/db/schedule-runs';
@@ -13,6 +13,7 @@ import {
   updateSchedule,
   updateScheduleRunData
 } from '~/lib/db/schedules';
+import { env } from '~/lib/env/server';
 import { scheduleGetNextRun, utcToLocalDate } from '~/lib/monitoring/scheduler';
 import { listPlaybooks } from '~/lib/tools/playbooks';
 
@@ -21,7 +22,9 @@ export async function generateCronExpression(description: string): Promise<strin
   Return strictly the cron expression, no quotes or anything else.`;
 
   const { text } = await generateText({
-    model: openai('gpt-4o'),
+    model: env.DEEPSEEK_LOCAL_URL
+      ? createDeepSeek({ baseURL: env.DEEPSEEK_LOCAL_URL })(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat')
+      : deepseek(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat'),
     prompt: prompt
   });
 

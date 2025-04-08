@@ -1,6 +1,8 @@
 'use server';
 
+import { anthropic } from '@ai-sdk/anthropic';
 import { createDeepSeek, deepseek } from '@ai-sdk/deepseek';
+import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { auth } from '~/auth';
 import { getScheduleRuns, ScheduleRun } from '~/lib/db/schedule-runs';
@@ -21,10 +23,27 @@ export async function generateCronExpression(description: string): Promise<strin
   const prompt = `Generate a cron expression for the following schedule description: "${description}". 
   Return strictly the cron expression, no quotes or anything else.`;
 
+  let model;
+
+  if (env.CRON_MODEL_TYPE === 'deepseek') {
+    if (env.CRON_MODEL_URL) {
+      model = createDeepSeek({
+        baseURL: env.CRON_MODEL_URL,
+        apiKey: env.CRON_MODEL_KEY
+      })(env.CRON_MODEL_NAME || 'deepseek-chat');
+    } else {
+      model = deepseek(env.CRON_MODEL_NAME || 'deepseek-chat');
+    }
+  } else if (env.CRON_MODEL_TYPE === 'openai') {
+    model = openai(env.CRON_MODEL_NAME || 'gpt-3.5-turbo');
+  } else if (env.CRON_MODEL_TYPE === 'anthropic') {
+    model = anthropic(env.CRON_MODEL_NAME || 'claude-3-haiku');
+  } else {
+    model = deepseek(env.CRON_MODEL_NAME || 'deepseek-chat');
+  }
+
   const { text } = await generateText({
-    model: env.DEEPSEEK_LOCAL_URL
-      ? createDeepSeek({ baseURL: env.DEEPSEEK_LOCAL_URL })(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat')
-      : deepseek(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat'),
+    model,
     prompt: prompt
   });
 

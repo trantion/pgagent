@@ -41,6 +41,18 @@ const GENERAL_MONITORING_PLAYBOOK = `
 Objective:
 To assess and ensure the optimal performance of the PostgreSQL database by reviewing key metrics, logs, and slow queries.
 
+Support Metrics:
+- cpu_utilization: Measures the percentage of CPU resources being used
+- memory_utilization: Shows the memory usage and available memory
+- disk_utilization: Monitors storage space usage and I/O activity
+- connection_count: Tracks number of active database connections
+- transaction_rate: Measures database transaction throughput
+- cache_hit_ratio: Shows effectiveness of database caching
+- index_usage: Monitors how frequently indexes are being used
+- table_size: Tracks growth of table sizes
+- index_size: Monitors size of database indexes
+- vacuum_status: Shows status of vacuum operations
+
 Step 1:
 Check CPU Utilization:
 

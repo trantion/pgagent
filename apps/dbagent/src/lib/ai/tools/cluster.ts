@@ -2,8 +2,8 @@ import { tool, Tool } from 'ai';
 import { z } from 'zod';
 import { Connection } from '~/lib/db/connections';
 import { getPostgresExtensions, getTablesAndInstanceInfo } from '~/lib/tools/dbinfo';
-import { getInstanceLogs } from '~/lib/tools/logs';
-import { getClusterMetric } from '~/lib/tools/metrics';
+import { getPostgresLogs } from '~/lib/tools/postgres-logs';
+import { getPostgresMetrics, PostgresMetricResult } from '~/lib/tools/postgres-metrics';
 import { ToolsetGroup } from './types';
 
 export function getDBClusterTools(connection: Connection, asUserId?: string): Record<string, Tool> {
@@ -63,7 +63,8 @@ instance/cluster on which the DB is running. Useful during the initial assessmen
       execute: async ({ periodInSeconds, grep }) => {
         console.log('getInstanceLogs', periodInSeconds, grep);
         const { connection, asUserId } = await getter();
-        return await getInstanceLogs({ connection, periodInSeconds, grep, asUserId });
+        return await getPostgresLogs({ connection, periodInSeconds, grep, asUserId });
+        // return await getInstanceLogs({ connection, periodInSeconds, grep, asUserId });
       }
     });
   }
@@ -71,15 +72,48 @@ instance/cluster on which the DB is running. Useful during the initial assessmen
   private getInstanceMetric(): Tool {
     const getter = this._connection;
     return tool({
-      description: `Get the metrics for the RDS instance. You can specify the period in seconds.`,
+      description: `Get the metrics for the PostgreSQL instance. Supported metrics: cpu_utilization, memory_utilization, disk_utilization, connection_count, transaction_rate, cache_hit_ratio, index_usage, table_size, index_size, vacuum_status.`,
       parameters: z.object({
-        metricName: z.string(),
+        metricName: z.enum([
+          'cpu_utilization',
+          'memory_utilization',
+          'disk_utilization',
+          'connection_count',
+          'transaction_rate',
+          'cache_hit_ratio',
+          'index_usage',
+          'table_size',
+          'index_size',
+          'vacuum_status'
+        ]),
         periodInSeconds: z.number()
       }),
       execute: async ({ metricName, periodInSeconds }) => {
-        console.log('getClusterMetric', metricName, periodInSeconds);
+        console.log('getInstanceMetric', metricName, periodInSeconds);
         const { connection, asUserId } = await getter();
-        return await getClusterMetric({ connection, metricName, periodInSeconds, asUserId });
+        try {
+          const result = await getPostgresMetrics({
+            connection,
+            metricType: metricName,
+            periodInSeconds,
+            asUserId
+          });
+
+          if (!Array.isArray(result) || result.length === 0) {
+            return 'No metrics data available';
+          }
+
+          // Handle PostgresMetricResult[]
+          return (result as PostgresMetricResult[])
+            .map(
+              (r) =>
+                `${r.timestamp.toISOString()}: ${r.value}${r.details ? '\nDetails: ' + JSON.stringify(r.details) : ''}`
+            )
+            .join('\n');
+        } catch (error) {
+          console.error('Error getting metrics:', error);
+          return `Error getting metrics: ${error instanceof Error ? error.message : String(error)}`;
+        }
       }
     });
   }

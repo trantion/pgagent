@@ -41,10 +41,8 @@ export function getModelInstance(model: string): LanguageModelV1 {
   if (model.startsWith('openai-')) {
     return openai(model.replace('openai-', ''));
   } else if (model.startsWith('deepseek-')) {
-    if (model === 'deepseek-local') {
-      return env.DEEPSEEK_LOCAL_URL
-        ? createDeepSeek({ baseURL: env.DEEPSEEK_LOCAL_URL })(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat')
-        : deepseek(env.DEEPSEEK_LOCAL_MODEL || 'deepseek-chat');
+    if (env.DEEPSEEK_URL) {
+      return createDeepSeek({ baseURL: env.DEEPSEEK_URL })(model);
     } else {
       return deepseek(model);
     }

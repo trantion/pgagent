@@ -20,9 +20,14 @@ const schema = z.object({
   // LLM API credentials
   OPENAI_API_KEY: z.string(),
   DEEPSEEK_API_KEY: z.string().optional(),
-  DEEPSEEK_LOCAL_URL: z.string().optional(),
-  DEEPSEEK_LOCAL_MODEL: z.string().optional(),
+  DEEPSEEK_URL: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
+
+  // Cron task model configuration
+  CRON_MODEL_TYPE: z.string().optional().default('deepseek'),
+  CRON_MODEL_NAME: z.string().optional().default('deepseek-chat'),
+  CRON_MODEL_URL: z.string().optional(),
+  CRON_MODEL_KEY: z.string().optional(),
 
   // Scheduler
   MAX_PARALLEL_RUNS: z.number().default(20), // How many schedules can be run in parallel

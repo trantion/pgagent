@@ -5,6 +5,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-dbagent}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DB: ${POSTGRES_DB:-dbagent}
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: 'pg_stat_statements'
+    command:
+      - 'postgres'
+      - '-c'
+      - 'shared_preload_libraries=pg_stat_statements'
+      - '-c'
+      - 'pg_stat_statements.track=all'
+      - '-c'
+      - 'pg_stat_statements.max=10000'
     ports:
       - '5432:5432'
     volumes:

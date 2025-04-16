@@ -78,7 +78,7 @@ export function ScheduleForm({ projectId, isEditMode, scheduleId, playbooks, con
     defaultValues: {
       playbook: playbook || playbooks[0] || '',
       connection: connections.find((c) => c.isDefault)?.name || '',
-      model: 'openai-gpt-4o',
+      model: 'deepseek-chat',
       scheduleType: 'cron',
       minInterval: '5',
       maxInterval: '1440',
@@ -98,7 +98,7 @@ export function ScheduleForm({ projectId, isEditMode, scheduleId, playbooks, con
         form.reset({
           playbook: schedule.playbook,
           connection: connections.find((c) => c.id === schedule.connectionId)?.name || '',
-          model: schedule.model || 'openai-gpt-4o',
+          model: schedule.model || 'deepseek-chat',
           scheduleType: schedule.scheduleType as 'automatic' | 'cron',
           cronExpression: schedule.cronExpression ?? undefined,
           minInterval: schedule.minInterval?.toString(),

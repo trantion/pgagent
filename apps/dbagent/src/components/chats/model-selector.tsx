@@ -11,7 +11,7 @@ export function ModelSelector({ value, onValueChange }: ModelSelectorProps) {
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent defaultValue="deepseek-chat">
         <SelectItem value="openai-gpt-4o">GPT-4o</SelectItem>
         <SelectItem value="openai-gpt-4-turbo">GPT-4 Turbo</SelectItem>
         <SelectItem value="deepseek-chat">DeepSeek Chat</SelectItem>

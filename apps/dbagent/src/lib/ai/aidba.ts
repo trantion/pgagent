@@ -42,7 +42,7 @@ export function getModelInstance(model: string): LanguageModelV1 {
     return openai(model.replace('openai-', ''));
   } else if (model.startsWith('deepseek-')) {
     if (env.DEEPSEEK_URL) {
-      return createDeepSeek({ baseURL: env.DEEPSEEK_URL })(model);
+      return createDeepSeek({ baseURL: env.DEEPSEEK_URL })(env.DEEPSEEK_NAME || model);
     } else {
       return deepseek(model);
     }

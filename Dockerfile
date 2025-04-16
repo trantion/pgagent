@@ -75,5 +75,7 @@ WORKDIR /app/apps/dbagent
 # Configure NODE_PATH to help with module resolution 
 ENV NODE_PATH=/app/node_modules
 
+RUN pnpm drizzle-kit
+
 # Start both the scheduler and the Next.js application
 CMD ["sh", "-c", "pnpm drizzle-kit migrate && (pnpm tsx scripts/scheduler.ts & pnpm next start --port $PORT)"] 

@@ -21,6 +21,7 @@ const schema = z.object({
   OPENAI_API_KEY: z.string(),
   DEEPSEEK_API_KEY: z.string().optional(),
   DEEPSEEK_URL: z.string().optional(),
+  DEEPSEEK_NAME: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
 
   // Cron task model configuration

@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17
+    image: ${POSTGRES_IMAGE:-postgres:1.7.11}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-dbagent}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
@@ -22,7 +22,7 @@ services:
       - ./apps/dbagent/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   xata-agent:
-    image: dbagent
+    image: ${AGENT_IMAGE:-dbagent}
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-dbagent}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-dbagent}
       NODE_ENV: production
